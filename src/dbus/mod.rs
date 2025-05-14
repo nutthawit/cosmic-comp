@@ -11,6 +11,7 @@ use std::collections::HashMap;
 use tracing::{error, warn};
 use zbus::blocking::{fdo::DBusProxy, Connection};
 
+pub mod a11y_keyboard_monitor;
 #[cfg(feature = "systemd")]
 pub mod logind;
 mod name_owners;
