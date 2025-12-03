@@ -860,7 +860,7 @@ dependencies = [
  "sendfd",
  "serde",
  "serde_json",
- "smithay",
+ "smithay 0.7.0",
  "smithay-egui",
  "thiserror 2.0.17",
  "time",
@@ -4952,7 +4952,6 @@ checksum = "67b1b7a3b5fe4f1376887184045fcf45c69e92af734b7aaddc05fb777b6fbd03"
 [[package]]
 name = "smithay"
 version = "0.7.0"
-source = "git+https://github.com/smithay/smithay.git?rev=d40ada5#d40ada55eceac04fb1c752f0f17b0c32cf24fbb1"
 dependencies = [
  "aliasable",
  "appendlist",
@@ -4998,6 +4997,40 @@ dependencies = [
  "wayland-server",
  "winit",
  "x11rb",
+ "xkbcommon 0.9.0",
+]
+
+[[package]]
+name = "smithay"
+version = "0.7.0"
+source = "git+https://github.com/smithay/smithay.git?rev=d40ada5#d40ada55eceac04fb1c752f0f17b0c32cf24fbb1"
+dependencies = [
+ "appendlist",
+ "atomic_float",
+ "bitflags 2.9.4",
+ "calloop 0.14.3",
+ "cgmath",
+ "cursor-icon",
+ "downcast-rs",
+ "drm-fourcc",
+ "errno",
+ "gl_generator",
+ "glow 0.16.0",
+ "indexmap 2.11.4",
+ "libc",
+ "libloading",
+ "profiling",
+ "rand 0.9.2",
+ "rustix 1.1.2",
+ "sha2",
+ "smallvec",
+ "tempfile",
+ "thiserror 2.0.17",
+ "tracing",
+ "wayland-protocols",
+ "wayland-protocols-misc",
+ "wayland-protocols-wlr",
+ "wayland-server",
  "xkbcommon 0.9.0",
 ]
 
@@ -5080,7 +5113,7 @@ dependencies = [
  "image",
  "log",
  "memoffset",
- "smithay",
+ "smithay 0.7.0 (git+https://github.com/smithay/smithay.git?rev=d40ada5)",
  "xkbcommon 0.8.0",
 ]
 

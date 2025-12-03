@@ -94,6 +94,7 @@ branch = "feature/copy_clone"
 git = "https://github.com/Drakulix/id-tree.git"
 
 [dependencies.smithay]
+path = "../smithay"
 version = "0.7.0"
 default-features = false
 features = [
@@ -139,7 +140,7 @@ debug = true
 inherits = "release"
 
 [profile.release]
-lto = "fat"
+lto = "thin"
 
 [patch."https://github.com/pop-os/cosmic-protocols"]
 cosmic-protocols = { git = "https://github.com/pop-os//cosmic-protocols", branch = "main" }
