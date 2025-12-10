@@ -1,0 +1,16 @@
+[
+  {
+    "label": "Debug",
+    "adapter": "CodeLLDB",
+    "request": "launch",
+    "program": "./target/debug/cosmic-comp",
+    // "env": {
+    //   "WAYLAND_DISPLAY": "/run/user/1000/wayland-2",
+    //   "RUST_LOG": "trace",
+    //   "SWC_DEBUG": "1"
+    // },
+    "build": {
+      "command": "cargo build"
+    }
+  }
+]

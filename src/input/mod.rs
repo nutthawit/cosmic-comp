@@ -68,7 +68,7 @@ use smithay::{
         tablet_manager::{TabletDescriptor, TabletSeatTrait},
     },
 };
-use tracing::{error, trace, warn};
+use tracing::{debug, error, trace, warn};
 use xkbcommon::xkb::{Keycode, Keysym};
 
 use std::{
@@ -252,6 +252,8 @@ impl State {
                                 let result = Self::filter_keyboard_input(
                                     data, &event, &seat, modifiers, handle, serial,
                                 );
+
+                                debug!("{:?}", result);
 
                                 if (matches!(result, FilterResult::Forward)
                                     && !seat.get_keyboard().unwrap().is_grabbed()
@@ -1568,6 +1570,13 @@ impl State {
     ) -> FilterResult<Option<(Action, shortcuts::Binding)>> {
         let mut shell = self.common.shell.write();
 
+        debug!(
+            "{:?} {:?} {:?}",
+            event.key_code(),
+            handle.raw_syms(),
+            event.state(),
+        );
+
         let keyboard = seat.get_keyboard().unwrap();
         let pointer = seat.get_pointer().unwrap();
         // We're only interested in filtering keyboard grabs if we initiated them.
@@ -1848,9 +1857,49 @@ impl State {
 
         // handle the rest of the global shortcuts
         let mut clear_queue = true;
+
+        // debug!("shortcuts_inhibited: {:?}", shortcuts_inhibited);
+
+        // Get current keymap
+        let current_keymap = keyboard.with_xkb_state(self, |ctx| unsafe {
+            let keymap = ctx
+                .xkb()
+                .lock()
+                .unwrap()
+                .keymap()
+                .get_as_string(xkbcommon::xkb::KEYMAP_FORMAT_TEXT_V1);
+            keymap
+        });
+
         if !shortcuts_inhibited {
             let modifiers_queue = seat.modifiers_shortcut_queue();
 
+            if modifiers.is_any_modifier_active() {
+                use xkbcommon::xkb::{
+                    CONTEXT_NO_FLAGS, Context, KEYMAP_COMPILE_NO_FLAGS, KEYMAP_FORMAT_TEXT_V1,
+                    Keymap,
+                };
+
+                // Create us keymap
+                let context = Context::new(CONTEXT_NO_FLAGS);
+                let us_keymap = Keymap::new_from_names(
+                    &context,
+                    "evdev",
+                    "pc105",
+                    "us",
+                    "",
+                    None,
+                    KEYMAP_COMPILE_NO_FLAGS,
+                )
+                .unwrap()
+                .get_as_string(KEYMAP_FORMAT_TEXT_V1);
+
+                // Overwrite whatever keymap with us_keymap
+                keyboard.set_keymap_from_string(self, us_keymap).unwrap();
+            }
+
+            let mut result: FilterResult<Option<(Action, shortcuts::Binding)>> =
+                FilterResult::Forward;
             for (binding, action) in self.common.config.shortcuts.iter() {
                 if *action == shortcuts::Action::Disable {
                     continue;
@@ -1863,10 +1912,11 @@ impl State {
                     && modifiers_queue.take(binding)
                 {
                     modifiers_queue.clear();
-                    return FilterResult::Intercept(Some((
+                    result = FilterResult::Intercept(Some((
                         Action::Shortcut(action.clone()),
                         binding.clone(),
                     )));
+                    break;
                 }
 
                 // could this potentially become a modifier-only binding?
@@ -1878,6 +1928,13 @@ impl State {
                     clear_queue = false;
                 }
 
+                let mut _is_match = false;
+                let mut _is_eq = false;
+                if binding.key.is_some() {
+                    _is_match = handle.raw_syms().contains(&binding.key.unwrap());
+                    _is_eq = cosmic_modifiers_eq_smithay(&binding.modifiers, modifiers);
+                }
+
                 // is this a normal binding?
                 if binding.key.is_some()
                     && event.state() == KeyState::Pressed
@@ -1886,12 +1943,17 @@ impl State {
                 {
                     modifiers_queue.clear();
                     seat.supressed_keys().add(&handle, None);
-                    return FilterResult::Intercept(Some((
+                    result = FilterResult::Intercept(Some((
                         Action::Shortcut(action.clone()),
                         binding.clone(),
                     )));
+                    break;
                 }
             }
+            keyboard
+                .set_keymap_from_string(self, current_keymap)
+                .unwrap();
+            return result;
         }
 
         // no binding
