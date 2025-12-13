@@ -68,7 +68,7 @@ use smithay::{
         tablet_manager::{TabletDescriptor, TabletSeatTrait},
     },
 };
-use tracing::{error, trace, warn};
+use tracing::{debug, error, trace, warn};
 use xkbcommon::xkb::{Keycode, Keysym, KEYMAP_FORMAT_TEXT_V1};
 
 use std::{
@@ -252,6 +252,8 @@ impl State {
                                 let result = Self::filter_keyboard_input(
                                     data, &event, &seat, modifiers, handle, serial,
                                 );
+
+                                debug!("{:?}", result);
 
                                 if (matches!(result, FilterResult::Forward)
                                     && !seat.get_keyboard().unwrap().is_grabbed()
@@ -1583,6 +1585,13 @@ impl State {
         serial: Serial,
     ) -> FilterResult<Option<(Action, shortcuts::Binding)>> {
         let mut shell = self.common.shell.write();
+
+        debug!(
+            "{:?} {:?} {:?}",
+            event.key_code(),
+            handle.raw_syms(),
+            event.state(),
+        );
 
         let keyboard = seat.get_keyboard().unwrap();
         let pointer = seat.get_pointer().unwrap();
