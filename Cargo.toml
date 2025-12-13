@@ -139,7 +139,7 @@ debug = true
 inherits = "release"
 
 [profile.release]
-lto = "fat"
+lto = "thin"
 
 [patch."https://github.com/pop-os/cosmic-protocols"]
 cosmic-protocols = { git = "https://github.com/pop-os//cosmic-protocols", branch = "main" }
