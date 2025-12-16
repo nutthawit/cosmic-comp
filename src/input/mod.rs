@@ -68,8 +68,8 @@ use smithay::{
         tablet_manager::{TabletDescriptor, TabletSeatTrait},
     },
 };
-use tracing::{debug, error, trace, warn};
-use xkbcommon::xkb::{Keycode, Keysym, KEYMAP_FORMAT_TEXT_V1};
+use tracing::{error, trace, warn};
+use xkbcommon::xkb::{Keycode, Keysym};
 
 use std::{
     any::Any,
