@@ -253,8 +253,6 @@ impl State {
                                     data, &event, &seat, modifiers, handle, serial,
                                 );
 
-                                debug!("{:?}", result);
-
                                 if (matches!(result, FilterResult::Forward)
                                     && !seat.get_keyboard().unwrap().is_grabbed()
                                     && !shortcuts_inhibited
@@ -1586,13 +1584,6 @@ impl State {
     ) -> FilterResult<Option<(Action, shortcuts::Binding)>> {
         let mut shell = self.common.shell.write();
 
-        debug!(
-            "{:?} {:?} {:?}",
-            event.key_code(),
-            handle.raw_syms(),
-            event.state(),
-        );
-
         let keyboard = seat.get_keyboard().unwrap();
         let pointer = seat.get_pointer().unwrap();
         // We're only interested in filtering keyboard grabs if we initiated them.
@@ -1899,10 +1890,6 @@ impl State {
                 keyboard.set_keymap_from_string(self, us_keymap).unwrap();
             }
 
-            if event.key_code().eq(&Keycode::new(66)) || event.key_code().eq(&Keycode::new(66)) {
-                debug!("handle.raw_syms(): {:?}", handle.raw_syms());
-            }
-
             let mut result: FilterResult<Option<(Action, shortcuts::Binding)>> =
                 FilterResult::Forward;
 
@@ -1933,13 +1920,6 @@ impl State {
                     modifiers_queue.set(binding.clone());
                     clear_queue = false;
                 }
-
-                // if binding.key.is_some()
-                //     && event.state() == KeyState::Pressed
-                //     && handle.raw_syms().contains(&binding.key.unwrap()) {
-                //     debug!("this mod: {:?}", &binding.modifiers);
-                //     debug!("other mod: {:?}", modifiers);
-                // }
 
                 // is this a normal binding?
                 if binding.key.is_some()

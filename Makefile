@@ -7,7 +7,7 @@ sharedir = $(prefix)/share
 BINARY = cosmic-comp
 CARGO_TARGET_DIR ?= target
 TARGET = debug
-DEBUG ?= 1
+DEBUG ?= 0
 
 .PHONY = all clean install uninstall vendor
 
